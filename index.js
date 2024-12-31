@@ -1,24 +1,39 @@
 export function quark(json) {
   const parseKey = (key) => {
-    const [tag, ...rest] = key.split(/(?=[.#\[])/); // Split into tag, classes, IDs, and attributes
     const attributes = {};
-    const regexAttr = /\[([^\]]+)=["']?([^\]"']+)["']?\]/;
+    const regexAttr = /\[([^\]]+)=["']?([^\]"']+)["']?\]/g; // Matches attributes like [key="value"]
+    const regexParts =
+      /^(?<tag>[a-z]+\d?)?(?<id>#\w+)?(?<classes>(\.\w+|-\w+)*)?(?<attrs>(\[.*\])*)$/i;
 
-    rest.forEach((part) => {
-      if (part.startsWith(".")) {
-        attributes.class = (attributes.class || "") + " " + part.slice(1);
-      } else if (part.startsWith("#")) {
-        attributes.id = part.slice(1);
-      } else if (regexAttr.test(part)) {
-        const [, attr, value] = part.match(regexAttr);
+    const match = key.match(regexParts);
+
+    if (!match) {
+      throw new Error(`Invalid key format: ${key}`);
+    }
+
+    const { tag, id, classes, attrs } = match.groups;
+
+    if (id) {
+      attributes.id = id.slice(1); // Remove the `#`
+    }
+
+    if (classes) {
+      attributes.class = classes.replace(/\./g, " ").trim(); // Replace `.` with spaces
+    }
+
+    if (attrs) {
+      let attrMatch;
+      while ((attrMatch = regexAttr.exec(attrs)) !== null) {
+        const [, attr, value] = attrMatch;
         attributes[attr] = value;
       }
-    });
+    }
+
     return { tag, attributes };
   };
 
   const createElement = (key, value) => {
-    const { tag, attributes } = parseKey(key);
+    const { tag = "div", attributes } = parseKey(key);
     const element = document.createElement(tag);
 
     // Set attributes
@@ -35,16 +50,14 @@ export function quark(json) {
         Object.assign(element.style, value.style);
       }
 
-      if (value.events) {
-        // Attach event listeners
-        for (const [event, handler] of Object.entries(value.events)) {
-          element.addEventListener(event, handler);
-        }
+      if (value.src || ["img", "audio"].includes(tag)) {
+        // Attach src if the element is img or audio
+        element.src = value.src;
       }
 
       // Recursively process child elements
       for (const [childKey, childValue] of Object.entries(value)) {
-        if (childKey !== "style" && childKey !== "events") {
+        if (!["style", "src"].includes(childKey)) {
           element.appendChild(createElement(childKey, childValue));
         }
       }

@@ -1,10 +1,20 @@
 {
-  "name": "quark.js",
-  "version": "0.1.1-alpha",
+  "name": "quark-js",
+  "version": "0.0.2-alpha",
   "description": "The smallest Javascript library to create user interfaces.",
   "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/NDJafu/quark"
+  },
   "scripts": {
-    "test": "npm run test"
+    "preinstall": "npx only-allow pnpm",
+    "postinstall": "simple-git-hooks",
+    "test": "npm run test",
+    "publish": "pnpm run package:release",
+    "bump": "changeset add",
+    "package:release": "changeset publish",
+    "format": "prettier --write --cache \"**/*.[tj]s?(x)\""
   },
   "keywords": [
     "quark",
@@ -16,5 +26,18 @@
     "json"
   ],
   "author": "NDJafu",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "@changesets/cli": "^2.27.11",
+    "prettier": "^3.4.2",
+    "simple-git-hooks": "^2.11.1",
+    "vitest": "^2.1.8"
+  },
+  "simple-git-hooks": {
+    "pre-commit": "pnpm run format"
+  },
+  "engines": {
+    "pnpm": ">=8.8.0"
+  },
+  "packageManager": "pnpm@8.8.0"
 }
