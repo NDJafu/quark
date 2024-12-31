@@ -1,0 +1,20 @@
+{
+  "name": "quark.js",
+  "version": "0.1.0-alpha",
+  "description": "The smallest Javascript library to create user interfaces.",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm run test"
+  },
+  "keywords": [
+    "quark",
+    "quarkjs",
+    "ui",
+    "components",
+    "minimal",
+    "performance",
+    "json"
+  ],
+  "author": "NDJafu",
+  "license": "MIT"
+}
