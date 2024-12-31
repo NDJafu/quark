@@ -1,4 +1,4 @@
-function quark(json) {
+export function quark(json) {
   const parseKey = (key) => {
     const [tag, ...rest] = key.split(/(?=[.#\[])/); // Split into tag, classes, IDs, and attributes
     const attributes = {};
@@ -56,5 +56,3 @@ function quark(json) {
   const [rootKey, rootValue] = Object.entries(json)[0];
   return createElement(rootKey, rootValue);
 }
-
-export default quark;
